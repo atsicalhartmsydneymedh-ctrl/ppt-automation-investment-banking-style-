@@ -1,0 +1,33 @@
+{
+  "segmenting": {
+    "min_chars_per_slide": 700,
+    "max_chars_per_slide": 1800,
+    "max_supporting_points": 10
+  },
+  "theme": {
+    "name": "consulting_blue",
+    "primary": "#183A59",
+    "accent": "#2F80ED",
+    "secondary": "#6B7280",
+    "background": "#F7F9FC",
+    "surface": "#FFFFFF",
+    "text": "#111827"
+  },
+  "slide": {
+    "width_inches": 13.333,
+    "height_inches": 7.5,
+    "aspect_ratio": "16:9"
+  },
+  "composition_decision": {
+    "enabled": true
+  },
+  "image_generation": {
+    "provider": "openai_cli",
+    "model": "gpt-image-2",
+    "size": "2048x1152",
+    "quality": "high",
+    "concurrency": 2,
+    "width": 1600,
+    "height": 900
+  }
+}
