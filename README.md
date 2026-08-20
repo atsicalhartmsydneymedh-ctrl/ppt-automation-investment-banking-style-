@@ -3,6 +3,10 @@
 [中文说明](README_CN.md)
 
 This workflow turns a report into high-density consulting slide effect images, then prepares an optional production handoff for reconstructing those approved images as editable PowerPoint slides. The effect image is the primary design artifact; editable PPT production works best when the image is paired with a fixed typography specification, an external asset pack, and a reconstruction prompt for GPT for PPT or another PowerPoint-capable AI.
+<img width="1274" height="896" alt="微信图片_20260820111304_354_19" src="https://github.com/user-attachments/assets/c3ea9063-d605-409f-b920-142d4e4454b6" />
+<img width="1272" height="898" alt="微信图片_20260820111304_353_19" src="https://github.com/user-attachments/assets/4596f316-6f28-45e4-b44d-14c5024240fa" />
+<img width="1274" height="898" alt="微信图片_20260820111306_356_19" src="https://github.com/user-attachments/assets/8a577352-08d8-411a-9b52-0446199af084" />
+<img width="1276" height="894" alt="微信图片_20260820111305_355_19" src="https://github.com/user-attachments/assets/e2d57e74-f3b1-46fd-9264-f20d38f3b776" />
 
 ## Core Principle
 
