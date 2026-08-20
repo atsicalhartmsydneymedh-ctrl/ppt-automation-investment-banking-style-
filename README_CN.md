@@ -1,11 +1,12 @@
-<img width="1272" height="898" alt="微信图片_20260820111304_353_19" src="https://github.com/user-attachments/assets/a744c57b-8ad0-4bd1-b413-04cfde886e44" />写在开头（人话）
+写在开头（人话）
 本套工作流目的是帮助大家解放投行、咨询ppt的纷繁任务。
 目前很多朋友部署下来觉得效果不如我所展示的，主要是因为没有生成设计稿，codex实际执行中直接跳过此步骤生成效果图，因此效果较差，可以通过在对话中要求他先生成设计稿供审阅，再向下推进（本人比较推荐此方法，因为设计稿的好坏决定了效果图的良莠，且设计稿中会把ppt的布局作详细说明，对排版有不满意也可在此环节修改）
 以下为效果展示：
+<img width="1272" height="898" alt="微信图片_20260820111304_353_19" src="https://github.com/user-attachments/assets/b1fb40f2-e207-4974-a19c-11097d2f7e47" />
 <img width="1274" height="898" alt="微信图片_20260820111306_356_19" src="https://github.com/user-attachments/assets/e7d7eebd-3b07-41e6-8fd7-d5f5642d98b5" />
 <img width="1276" height="894" alt="微信图片_20260820111305_355_19" src="https://github.com/user-attachments/assets/3f0d627e-e244-415e-934f-b44bdcb3f845" />
 <img width="1274" height="896" alt="微信图片_20260820111304_354_19" src="https://github.com/user-attachments/assets/4872180d-d885-4d68-ae60-577c2ebe4853" />
-<img width="1272" height="898" alt="微信图片_20260820111304_353_19" src="https://github.com/user-attachments/assets/b1fb40f2-e207-4974-a19c-11097d2f7e47" />
+
 
 
 
