@@ -3,10 +3,6 @@
 [中文说明](README_CN.md)
 
 This workflow turns a report into high-density consulting slide effect images, then prepares an optional production handoff for reconstructing those approved images as editable PowerPoint slides. The effect image is the primary design artifact; editable PPT production works best when the image is paired with a fixed typography specification, an external asset pack, and a reconstruction prompt for GPT for PPT or another PowerPoint-capable AI.
-<img width="1274" height="896" alt="微信图片_20260820111304_354_19" src="https://github.com/user-attachments/assets/c3ea9063-d605-409f-b920-142d4e4454b6" />
-<img width="1272" height="898" alt="微信图片_20260820111304_353_19" src="https://github.com/user-attachments/assets/4596f316-6f28-45e4-b44d-14c5024240fa" />
-<img width="1274" height="898" alt="微信图片_20260820111306_356_19" src="https://github.com/user-attachments/assets/8a577352-08d8-411a-9b52-0446199af084" />
-<img width="1276" height="894" alt="微信图片_20260820111305_355_19" src="https://github.com/user-attachments/assets/e2d57e74-f3b1-46fd-9264-f20d38f3b776" />
 
 ## Core Principle
 
@@ -133,6 +129,8 @@ Before selecting the page layout, the deterministic planner creates a page-level
 
 `Communication Objective → Information Density → Design Intensity → Visual Strategy → Archetype → Spatial Narrative → Asset Strategy`
 
+Before choosing the archetype, read `ppt_design_mechanism_library/global_defaults.yaml` and `mechanism_registry.yaml`. Match by semantic relationship, then load only the selected execution card; if multiple candidates remain, use `routing_disambiguation.yaml`. Never match a mechanism by industry, brand, source-slide keywords, or surface appearance.
+
 - Intensity 1–2: favor fast scanning, exact comparison, tables, matrices, and process structures. Do not force a hero visual.
 - Intensity 3: use an analytical claim-to-proof reading path.
 - Intensity 4–5: require a single visual proposition and a dominant geometry. Do not substitute equal cards, generic grids, or default SmartArt.
@@ -211,6 +209,8 @@ Verify:
 
 - The title states a conclusion rather than naming a topic.
 - Low-density first drafts are regenerated with an explicit high-density instruction before page approval.
+- Every page design draft follows `docs/design_draft_contract.md` and passes `python src/design_draft_validator.py <draft>` before image generation.
+- Density, spacing, and polish requests are layout-only patches against an approved design draft. They must not change the locked conclusion, semantic relationship, primary visual, evidence mapping, visual encoding, hierarchy, or anti-template constraints.
 - The page begins with the context the audience needs; it does not skip foundational report sections.
 - Text contains substantive synthesis, not labels or chart narration.
 - Every evidence visual has complete axes, values, units, annotations, and a linked claim.
