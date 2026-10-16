@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import statistics
 from typing import Any
 
 from composition_router import route_composition
@@ -11,10 +12,16 @@ def create_slide_plans(segments: list[dict[str, Any]], config: dict[str, Any] | 
     theme = (config or {}).get("theme", {})
     core_style = (config or {}).get("core_reference_style", {})
     composition_enabled = (config or {}).get("composition_decision", {}).get("enabled", True)
+    density_values = [_segment_evidence_load(segment) for segment in segments]
+    density_context = {
+        "min": min(density_values) if density_values else 0,
+        "max": max(density_values) if density_values else 0,
+        "median": statistics.median(density_values) if density_values else 0,
+    }
     plans: list[dict[str, Any]] = []
     for segment in segments:
         visual_type = segment.get("suggested_visual_type", "structured_bullets")
-        decision = route_composition(segment) if composition_enabled else None
+        decision = route_composition(segment, density_context) if composition_enabled else None
         layout = _layout_for_decision(decision, visual_type)
         plan = {
             "slide_number": segment["slide_number"],
@@ -43,6 +50,18 @@ def create_slide_plans(segments: list[dict[str, Any]], config: dict[str, Any] | 
             plan["asset_strategy"] = decision["asset_strategy"]
         plans.append(plan)
     return plans
+
+
+def _segment_evidence_load(segment: dict[str, Any]) -> float:
+    if segment.get("evidence_load") is not None:
+        return float(segment["evidence_load"])
+    return round(
+        len(segment.get("source_block_ids", [])) * 0.6
+        + len(segment.get("supporting_points", [])) * 0.8
+        + len(segment.get("data_points", []))
+        + int(segment.get("content_char_count", 0)) / 500,
+        2,
+    )
 
 
 def write_slide_plans(plans: list[dict[str, Any]], output_dir: Path) -> list[Path]:
@@ -170,11 +189,31 @@ def _visual_elements(visual_type: str, segment: dict[str, Any]) -> list[str]:
     return elements
 
 
-def _palette(theme: dict[str, Any], core_style: dict[str, Any] | None = None) -> dict[str, str]:
+def _palette(theme: dict[str, Any], core_style: dict[str, Any] | None = None) -> dict[str, Any]:
     core_palette = (core_style or {}).get("palette", {})
     roles = core_palette.get("roles", {})
     palette_values = core_palette.get("dominant_colors", [])
     fill_values = core_palette.get("fill_colors", [])
+    if core_style:
+        primary = _hex_or_fallback([roles.get("primary", "")], "#000000", 0)
+        support = _hex_or_fallback([roles.get("support", "")], primary, 0)
+        background = _hex_or_fallback([roles.get("background", "") or core_palette.get("background_color", "")], "#FFFFFF", 0)
+        surface = _hex_or_fallback([roles.get("surface", "")], background, 0)
+        body = _hex_or_fallback([roles.get("body", "")], "#000000", 0)
+        neutral = _hex_or_fallback([roles.get("neutral", "")], body, 0)
+        pale = _hex_or_fallback([roles.get("pale_fill", "")], surface, 0)
+        allowed = (core_style.get("hard_constraints", {}).get("palette", {}).get("allowed_hex") or [])
+        return {
+            "primary": primary,
+            "accent": support,
+            "pale_blue": pale,
+            "secondary": neutral,
+            "background": background,
+            "surface": surface,
+            "text": body,
+            "allowed_palette": [f"#{value.removeprefix('#')}" for value in allowed],
+            "source": "core_reference",
+        }
     return {
         "primary": _hex_or_fallback([roles.get("primary", "")], _hex_or_fallback(palette_values, theme.get("primary", "#183A59"), 0), 0),
         "accent": _hex_or_fallback([roles.get("support", "")], _hex_or_fallback(palette_values, theme.get("accent", "#2F80ED"), 0), 0),
@@ -183,6 +222,8 @@ def _palette(theme: dict[str, Any], core_style: dict[str, Any] | None = None) ->
         "background": _hex_or_fallback([roles.get("background", "") or core_palette.get("background_color", "FFFFFF")], theme.get("background", "#F7F9FC"), 0),
         "surface": theme.get("surface", "#FFFFFF"),
         "text": _hex_or_fallback([roles.get("body", "")], _hex_or_fallback(palette_values, theme.get("text", "#111827"), 0), 0),
+        "allowed_palette": [],
+        "source": "theme_fallback",
     }
 
 
@@ -200,14 +241,14 @@ def _typography(core_style: dict[str, Any] | None = None) -> dict[str, str]:
         title = typography.get("title", {})
         body = typography.get("body", {})
         return {
-            "title": f"{title.get('font_family') or 'Reference title font'} {title.get('size_pt') or 'reference'}pt, upper-left aligned",
-            "body": f"{body.get('font_family') or 'Reference body font'} {body.get('size_pt') or 'reference'}pt, compact research body",
-            "caption": "Reference footer/source treatment, compact and muted",
+            "title": f"KaiTi for Chinese; Arial for English/numbers/punctuation; {title.get('size_pt') or 'reference'}pt, upper-left aligned",
+            "body": f"KaiTi for Chinese; Arial for English/numbers/punctuation; {body.get('size_pt') or 'reference'}pt, compact research body",
+            "caption": "KaiTi for Chinese; Arial for English/numbers/punctuation; reference footer/source size",
         }
     return {
-        "title": "Aptos Display 26-30pt bold",
-        "body": "Aptos 11-15pt",
-        "caption": "Aptos 8-9pt muted",
+        "title": "KaiTi for Chinese; Arial for English/numbers/punctuation; 26-30pt bold",
+        "body": "KaiTi for Chinese; Arial for English/numbers/punctuation; 11-15pt",
+        "caption": "KaiTi for Chinese; Arial for English/numbers/punctuation; 8-9pt muted",
     }
 
 
@@ -223,10 +264,11 @@ def _style_rules(core_style: dict[str, Any] | None = None) -> list[str]:
         f"Core template: {core_style.get('template_name', 'declared core reference')}",
         f"Canvas: {canvas.get('aspect_ratio', 'reference ratio')} {canvas.get('width_inches', '?')}x{canvas.get('height_inches', '?')}in.",
         f"Palette: {palette.get('prompt_summary', 'use extracted reference palette')}.",
-        f"Typography: title {title.get('font_family', 'reference title font')} {title.get('size_pt', 'reference')}pt; body {body.get('font_family', 'reference body font')} {body.get('size_pt', 'reference')}pt; caption {caption.get('font_family', 'reference caption font')} {caption.get('size_pt', 'reference')}pt.",
+        f"Typography: Chinese KaiTi; English, numbers, and punctuation Arial; title {title.get('size_pt', 'reference')}pt; body {body.get('size_pt', 'reference')}pt; caption {caption.get('size_pt', 'reference')}pt.",
         core_style.get("title_system", {}).get("rule", ""),
         core_style.get("page_chrome", {}).get("rule", ""),
-        core_style.get("density", {}).get("recommended_evidence_modules", ""),
+        core_style.get("density", {}).get("rule", ""),
+        "Palette, typography sizes, title anchor, page chrome, and line treatment are hard project constraints extracted from this core reference.",
     ]
 
 
@@ -252,7 +294,7 @@ def _image_prompt(
         f"style contract: {style_rules} "
         "Use the stated canvas, title hierarchy, page chrome, and density rather than a generic "
         "consulting or SaaS style. "
-        f"Use extracted primary color {primary}, support color {accent}, pale fill {palette['pale_blue']}, background {palette['background']}, and body text {palette['text']}. "
+        f"Use the project palette extracted from this core reference: primary {primary}, support {accent}, pale fill {palette['pale_blue']}, background {palette['background']}, body text {palette['text']}; allowed colors {palette.get('allowed_palette', [])}. Do not introduce unrelated accent hues. "
         f"Slide title: {segment['title']}. Objective: {segment['core_message']}. "
         f"Layout: {layout['name']} ({layout['structure']}). Visual type: {visual_type}. "
         f"Composition decision: {composition_instruction} "

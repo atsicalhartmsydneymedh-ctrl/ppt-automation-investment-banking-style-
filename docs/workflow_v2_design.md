@@ -35,6 +35,14 @@ Defines the question answered by each visual, its full data model, chart grammar
 
 An image prompt is generated only after all three contracts are complete.
 
+### Fixed Visual Design Draft Contract
+
+The visual design draft is a fourth, fixed-format production contract. It must follow `docs/design_draft_contract.md` and preserve the page conclusion, semantic relationship, primary visual, evidence mapping, visual encoding, hierarchy, and anti-template constraints. Density or layout improvements are additive patches; they may not replace the approved draft with a shorter style summary. Image generation uses only a complete merged draft that passes `src/design_draft_validator.py`.
+
+Before the design draft is written, the workflow retrieves 1–3 candidate composition mechanisms from the reverse-engineered excellent-PPT library. Matching is based on the page's semantic relationship and evidence context, not industry or brand. The approved mechanism contributes its source example, match/reject conditions, slot capacity, layout DNA, and mechanism-specific QA to the design draft. The mechanism is adapted as composition grammar; it does not replace page evidence or copy source-deck branding.
+
+After approval, `src/prompt_compiler.py` compiles the full design draft, evidence specification, content arrangement, reusable mechanism, and core-reference style contract into the actual effect-image prompt. Authority is explicit: design controls layout, evidence controls facts, content controls narrative, the mechanism supplies proven grammar, and the core reference supplies style tokens only.
+
 ## Approval Logic
 
 A page is ready for image generation only when:

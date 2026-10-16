@@ -4,6 +4,27 @@
     "max_chars_per_slide": 1800,
     "max_supporting_points": 10
   },
+  "narrative_planning": {
+    "target_evidence_units": 6.0,
+    "max_evidence_units": 12.0,
+    "min_evidence_units": 2.0,
+    "max_supporting_points": 10,
+    "reorder_by_narrative_role": true
+  },
+  "narrative_ai": {
+    "provider": "deepseek_chat_completions",
+    "provider_name": "DeepSeek",
+    "model": "deepseek-v4-pro",
+    "min_page_count": 4,
+    "max_page_count": 12,
+    "max_output_tokens": 16000,
+    "timeout_seconds": 240,
+    "api_key_env": "DEEPSEEK_API_KEY",
+    "model_env": "DEEPSEEK_NARRATIVE_MODEL",
+    "endpoint": "https://api.deepseek.com/chat/completions",
+    "structured_output_mode": "json_object",
+    "env_file": ".env"
+  },
   "theme": {
     "name": "consulting_blue",
     "primary": "#183A59",
@@ -20,6 +41,15 @@
   },
   "composition_decision": {
     "enabled": true
+  },
+  "workflow": {
+    "mode": "production",
+    "require_deck_approval": true,
+    "require_page_approval": true,
+    "one_effect_image_per_run": true,
+    "aspect_ratio_tolerance": 0.005,
+    "cjk_font": "KaiTi",
+    "latin_numeric_font": "Arial"
   },
   "image_generation": {
     "provider": "openai_cli",

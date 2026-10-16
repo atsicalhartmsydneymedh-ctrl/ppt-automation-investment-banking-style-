@@ -2,15 +2,46 @@
 
 Use this project as a Codex-led editorial and effect-image workspace.
 
-## Manual Preparation
+## Current Stage-Gated Entry
 
-Put the report and the current core-reference PPT in `input/`, then run:
+The default entry point is resumable and approval-gated. It never batch-generates effect images.
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\run_latest_report.ps1 -CoreReference "input\核心参考-模板.pptx"
+# 1. Parse the report, inspect the core reference, and create the editable deck contract.
+powershell -ExecutionPolicy Bypass -File scripts\run_latest_report.ps1 -Stage prepare -CoreReference "input\核心参考-模板.pptx" -Output "output\my_run"
+
+# 2. After reviewing content_map\deck_contract.json, approve deck pagination and source coverage.
+powershell -ExecutionPolicy Bypass -File scripts\run_latest_report.ps1 -Stage approve-deck -Output "output\my_run"
+
+# 3. Prepare, review, and approve exactly one page's content/evidence/design contracts.
+powershell -ExecutionPolicy Bypass -File scripts\run_latest_report.ps1 -Stage prepare-page -Page 1 -Output "output\my_run"
+powershell -ExecutionPolicy Bypass -File scripts\run_latest_report.ps1 -Stage approve-page -Page 1 -Output "output\my_run"
+
+# 4. Generate exactly one effect image; without an API key this creates a prompt checkpoint.
+powershell -ExecutionPolicy Bypass -File scripts\run_latest_report.ps1 -Stage generate -Page 1 -Output "output\my_run"
+
+# 5. After visual review, record aspect-ratio and human approval.
+powershell -ExecutionPolicy Bypass -File scripts\run_latest_report.ps1 -Stage approve-image -Page 1 -Output "output\my_run"
+
+# Inspect resumable state and next actions at any time.
+powershell -ExecutionPolicy Bypass -File scripts\run_latest_report.ps1 -Stage status -Output "output\my_run"
 ```
 
-The script selects the newest supported report and extracts the current template's style contract. It does not establish the final pagination or authorize batch image generation.
+The previous character-segmentation and batch-image path remains available only as an explicit compatibility mode:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\run_latest_report.ps1 -Legacy -CoreReference "input\核心参考-模板.pptx"
+```
+
+## Manual Preparation
+
+Put the report and the current core-reference PPT in `input/`, then start the production preparation stage:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\run_latest_report.ps1 -Stage prepare -CoreReference "input\核心参考-模板.pptx" -Output "output\my_run"
+```
+
+The script selects the newest supported report, extracts the current template's style contract, creates an order-neutral semantic source payload, and asks DeepSeek through its Chat Completions endpoint for a JSON deck contract. The result is then checked against the full local schema. It does not approve final pagination or authorize image generation. If the configured narrative AI is unavailable, it stops with `narrative_ai_required` and creates no heuristic deck contract.
 
 ## Required Codex Sequence
 
@@ -18,8 +49,8 @@ The script selects the newest supported report and extracts the current template
    Save the style contract and parsed source blocks.
 2. **Build a full-report content map.**
    Inventory all chapters, conclusions, tables, examples, companies, risks, and recommendations with source block IDs.
-3. **Define deck-level reporting questions.**
-   Regroup material across chapter boundaries when useful. Assign a different primary semantic-diagram family to pages whose content contains a hierarchy, process, relationship, cycle, convergence, or decision path. Produce a page-to-source coverage audit before approving the page count.
+3. **Define deck-level reporting questions with narrative AI.**
+   Give the AI all semantic source records without heading formats or original ordering. It may regroup material across any chapter boundary. Validate complete source coverage, unique assignment, one conclusion per page, and a cumulative storyline before approving the page count. Save the automatic restructuring report.
 4. **Create one page's content arrangement.**
    Write the conclusion title, subsection headings, substantive bullets, exact evidence, and text-to-evidence links.
 5. **Create the page's evidence specifications.**
@@ -43,6 +74,8 @@ The script selects the newest supported report and extracts the current template
 
 - Do not batch-generate effect images.
 - Do not paginate by character count alone.
+- Do not use heading styles, chapter numbering, document page numbers, source order, or table position as pagination rules.
+- Do not silently fall back to deterministic pagination when narrative AI is unavailable or invalid.
 - Do not skip report foundations merely to foreground later comparisons.
 - Do not treat charts as decoration or use chart descriptions as analysis.
 - Do not reduce source tables to a few convenient numbers without a recorded coverage decision.

@@ -70,6 +70,13 @@ def extract_core_reference_style(reference_path: str | Path) -> dict[str, Any]:
     fill_colors: Counter[str] = Counter()
     background_colors: Counter[str] = Counter()
     footer_boxes: list[dict[str, float]] = []
+    content_bounds: list[dict[str, float]] = []
+    line_colors: Counter[str] = Counter()
+    line_weights: list[float] = []
+    rounded_shapes = 0
+    styled_shapes = 0
+    x_axes: list[float] = []
+    y_axes: list[float] = []
     text_block_counts: list[int] = []
 
     for slide in presentation.slides:
@@ -77,12 +84,28 @@ def extract_core_reference_style(reference_path: str | Path) -> dict[str, Any]:
         if background_rgb:
             background_colors[background_rgb] += 1
         text_blocks = 0
+        slide_boxes: list[dict[str, float]] = []
 
         for shape in slide.shapes:
+            box = _shape_box(shape)
+            if box and not _is_full_slide_box(box, width_in, height_in):
+                slide_boxes.append(box)
+                x_axes.extend((box["x"], box["x"] + box["w"]))
+                y_axes.extend((box["y"], box["y"] + box["h"]))
             fill_rgb = _rgb_from_fill(shape)
             if fill_rgb:
                 fill_colors[fill_rgb] += 1
                 colors[fill_rgb] += 1
+                styled_shapes += 1
+            line_rgb = _rgb_from_line(shape)
+            if line_rgb:
+                line_colors[line_rgb] += 1
+                colors[line_rgb] += 1
+            line_weight = _line_weight_pt(shape)
+            if line_weight:
+                line_weights.append(line_weight)
+            if _is_rounded_shape(shape):
+                rounded_shapes += 1
 
             if not getattr(shape, "has_text_frame", False):
                 continue
@@ -110,6 +133,8 @@ def extract_core_reference_style(reference_path: str | Path) -> dict[str, Any]:
                     colors[font["rgb"]] += 1
 
         text_block_counts.append(text_blocks)
+        if slide_boxes:
+            content_bounds.append(_bounds_from_boxes(slide_boxes))
 
     footer_anchor = _median_box(footer_boxes)
     layout_typography = _layout_typography(path)
@@ -126,7 +151,8 @@ def extract_core_reference_style(reference_path: str | Path) -> dict[str, Any]:
     }
     density = {
         "median_text_blocks": round(statistics.median(text_block_counts), 1) if text_block_counts else 0,
-        "recommended_evidence_modules": "2-4 on analysis pages; preserve the reference deck's intentional whitespace.",
+        "observed_text_block_range": [min(text_block_counts), max(text_block_counts)] if text_block_counts else [0, 0],
+        "rule": "Use the observed reference density as a pacing signal; page content and narrative job decide the exact evidence load.",
     }
     style = {
         "template_name": path.stem,
@@ -141,13 +167,26 @@ def extract_core_reference_style(reference_path: str | Path) -> dict[str, Any]:
         "typography": typography,
         "title_system": {
             "rule": "Reuse the reference title hierarchy and conclusion-led title treatment.",
+            "anchor_inches": _median_box(title_records),
         },
         "page_chrome": {
             "rule": "Preserve the reference footer/source/page-number convention and relative placement.",
             "footer_anchor_inches": footer_anchor,
         },
+        "content_geometry": {
+            "median_content_bounds_inches": _median_bounds(content_bounds),
+            "common_x_axes_inches": _common_axis_values(x_axes),
+            "common_y_axes_inches": _common_axis_values(y_axes),
+            "sizing": "adaptive",
+        },
+        "line_treatment": {
+            "dominant_colors": _top_values(line_colors, 5, include_neutral=True),
+            "median_weight_pt": round(statistics.median(line_weights), 2) if line_weights else None,
+            "rounded_shape_share": round(rounded_shapes / styled_shapes, 3) if styled_shapes else 0,
+        },
         "density": density,
     }
+    style["hard_constraints"] = compile_reference_style_contract(style)
     style["style_prompt"] = build_style_prompt(style)
     return style
 
@@ -179,10 +218,48 @@ def build_style_prompt(style: dict[str, Any]) -> str:
             f"Typography: title {title.get('font_family', 'reference title font')} about {title.get('size_pt', 'reference size')}pt; body {body.get('font_family', 'reference body font')} about {body.get('size_pt', 'reference size')}pt; caption {caption.get('font_family', 'reference caption font')} about {caption.get('size_pt', 'reference size')}pt.",
             style.get("title_system", {}).get("rule", ""),
             style.get("page_chrome", {}).get("rule", ""),
-            f"Density: {style.get('density', {}).get('recommended_evidence_modules', '')}",
+            f"Density: {style.get('density', {}).get('rule', '')}",
+            f"Hard palette: {', '.join(style.get('hard_constraints', {}).get('palette', {}).get('allowed_hex', []))}; do not introduce unrelated accent hues.",
         ]
         if part
     )
+
+
+def compile_reference_style_contract(style: dict[str, Any]) -> dict[str, Any]:
+    """Compile measurable project constraints exclusively from one reference PPT."""
+    palette = style.get("palette", {})
+    roles = palette.get("roles", {})
+    allowed = _unique_hexes(
+        [
+            *roles.values(),
+            *palette.get("dominant_colors", []),
+            *palette.get("fill_colors", []),
+            palette.get("background_color", ""),
+        ]
+    )
+    typography = style.get("typography", {})
+    return {
+        "source": style.get("reference_path"),
+        "policy": "dynamic_from_core_reference",
+        "palette": {
+            "roles": roles,
+            "allowed_hex": allowed,
+            "nearest_color_distance": 58,
+            "max_unapproved_accent_share": 0.10,
+        },
+        "typography": {
+            "cjk_font": "KaiTi",
+            "latin_numeric_font": "Arial",
+            "title_size_pt": typography.get("title", {}).get("size_pt"),
+            "body_size_pt": typography.get("body", {}).get("size_pt"),
+            "caption_size_pt": typography.get("caption", {}).get("size_pt"),
+        },
+        "title_system": style.get("title_system", {}),
+        "page_chrome": style.get("page_chrome", {}),
+        "content_geometry": style.get("content_geometry", {}),
+        "line_treatment": style.get("line_treatment", {}),
+        "density": style.get("density", {}),
+    }
 
 
 def _theme_fonts(path: Path) -> dict[str, str]:
@@ -445,35 +522,36 @@ def _palette_roles(
     fills: list[str],
     background: str,
 ) -> dict[str, str]:
-    """Assign semantic color roles instead of trusting counter order."""
+    """Assign generic semantic roles from the current deck, without brand defaults."""
     all_values = _unique_hexes([*dominant, *fills])
-    primary = _first_matching(all_values, _is_saturated_blue) or _first_matching(all_values, _is_dark_color) or "1B61A5"
+    chromatic = [value for value in all_values if _chroma(value) >= 28 and 35 <= _luminance(value) <= 225]
+    primary = (chromatic[0] if chromatic else None) or _first_matching(all_values, _is_dark_color) or "000000"
     support = (
-        _first_matching(
-            [value for value in all_values if value != primary],
-            lambda value: _is_saturated_blue(value) and 70 <= _luminance(value) <= 150,
-        )
+        _first_matching([value for value in chromatic if value != primary], lambda value: True)
         or primary
     )
     pale_fill = (
         _first_matching(
             fills,
-            lambda value: _luminance(value) >= 220 and _blue_bias(value) >= 8,
+            lambda value: _luminance(value) >= 220,
         )
-        or _first_matching(fills, lambda value: _luminance(value) >= 220)
-        or "ECF6FD"
+        or background
     )
     body = (
         _first_matching(all_values, lambda value: _is_neutral(value) and _luminance(value) <= 130)
         or _first_matching(all_values, _is_dark_color)
-        or "404040"
+        or "000000"
     )
+    neutral = _first_matching(all_values, _is_neutral) or body
+    surface = _first_matching(fills, lambda value: _luminance(value) >= 235) or background
     return {
         "primary": primary,
         "support": support,
         "pale_fill": pale_fill,
         "body": body,
         "background": background,
+        "neutral": neutral,
+        "surface": surface,
     }
 
 
@@ -506,6 +584,11 @@ def _luminance(value: str) -> float:
 def _blue_bias(value: str) -> int:
     red, green, blue = _rgb_tuple(value)
     return blue - red + max(0, blue - green)
+
+
+def _chroma(value: str) -> int:
+    red, green, blue = _rgb_tuple(value)
+    return max(red, green, blue) - min(red, green, blue)
 
 
 def _is_saturated_blue(value: str) -> bool:

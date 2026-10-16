@@ -3,10 +3,15 @@ param(
     [string]$Output = "output",
     [string]$ImageDir = "",
     [string]$CoreReference = "",
-    [switch]$PromptOnly
+    [ValidateSet("prepare", "approve-deck", "prepare-page", "approve-page", "generate", "approve-image", "status")]
+    [string]$Stage = "prepare",
+    [int]$Page = 0,
+    [switch]$PromptOnly,
+    [switch]$Legacy
 )
 
 $ErrorActionPreference = "Stop"
+$OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::new()
 
 $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 Set-Location $ProjectRoot
@@ -14,6 +19,7 @@ Set-Location $ProjectRoot
 function Resolve-Python {
     $candidates = @(
         (Join-Path $ProjectRoot ".venv\Scripts\python.exe"),
+        (Join-Path $env:USERPROFILE ".cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe"),
         "py",
         "python"
     )
@@ -49,31 +55,49 @@ function Resolve-InputReport {
 }
 
 $python = Resolve-Python
-$report = Resolve-InputReport $InputPath
+$report = $null
+if ($Legacy -or $Stage -eq "prepare") {
+    $report = Resolve-InputReport $InputPath
+}
 
 Write-Host "Project: $ProjectRoot"
-Write-Host "Input report: $report"
 Write-Host "Python: $python"
+if ($report) {
+    Write-Host "Input report: $report"
+}
 
-$argsList = @("src\main.py", "--input", $report, "--output", $Output)
+$mode = if ($Legacy) { "legacy" } else { "production" }
+$argsList = @("-X", "utf8", "src\main.py", "--mode", $mode, "--output", $Output)
+
+if ($Legacy) {
+    $argsList += @("--input", $report)
+}
+else {
+    $argsList += @("--stage", $Stage)
+    if ($Stage -eq "prepare") {
+        $argsList += @("--input", $report)
+    }
+    if ($Page -gt 0) {
+        $argsList += @("--page", $Page)
+    }
+}
 
 if ($CoreReference) {
     $argsList += @("--core-reference", $CoreReference)
 }
 
-if ($ImageDir) {
+if ($ImageDir -and ($Legacy -or $Stage -eq "generate")) {
     $argsList += @("--mockup-provider", "existing", "--image-dir", $ImageDir)
 }
-elseif ($PromptOnly -or -not $env:OPENAI_API_KEY) {
-    Write-Host "OPENAI_API_KEY is not set, so this run will create GPT image prompts only."
-    Write-Host "Use Codex automation or image2/GPT image generation to save slide_XX.png, then rerun with -ImageDir."
+elseif (($Legacy -or $Stage -eq "generate") -and ($PromptOnly -or -not $env:OPENAI_API_KEY)) {
+    Write-Host "This image stage will create GPT image prompts only."
     $argsList += @("--mockup-provider", "prompt_only")
 }
 
 & $python @argsList
 $code = $LASTEXITCODE
 
-if (($PromptOnly -or -not $env:OPENAI_API_KEY) -and $code -eq 2) {
+if ($Legacy -and ($PromptOnly -or -not $env:OPENAI_API_KEY) -and $code -eq 2) {
     Write-Host "Prompt-only checkpoint completed. Prompts are in output\slide_images\image_prompts.md."
     exit 0
 }

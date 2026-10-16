@@ -10,7 +10,7 @@ EXPRESSIVE_KEYWORDS = (
 )
 
 
-def route_composition(segment: dict[str, Any]) -> dict[str, Any]:
+def route_composition(segment: dict[str, Any], density_context: dict[str, float] | None = None) -> dict[str, Any]:
     """Return a complete, deterministic page-composition decision contract."""
     visual_type = segment.get("suggested_visual_type", "structured_bullets")
     text = " ".join(
@@ -19,31 +19,50 @@ def route_composition(segment: dict[str, Any]) -> dict[str, Any]:
     ).lower()
     point_count = len(segment.get("supporting_points", []))
     char_count = int(segment.get("content_char_count", 0))
-    density_score = _density_score(point_count, char_count, bool(segment.get("data_points")))
+    density_score, evidence_load, density_rationale = _density_score(
+        segment, point_count, char_count, bool(segment.get("data_points")), density_context
+    )
 
     if visual_type == "editable_table":
-        return _utility_decision("Structured Evidence / Table", "Evidence Table", density_score)
-    if visual_type == "timeline_or_process" and not _contains_expressive_intent(text):
-        return _utility_decision("Utility / Process", "Multi-track Process", density_score)
-    if visual_type == "matrix":
-        return _utility_decision("Structured Evidence / Matrix", "Process Matrix", density_score)
-    if _contains_expressive_intent(text):
-        return _expressive_decision(text, density_score)
-    if visual_type == "data_cards":
-        return _analytical_decision("Analytical / Data Storytelling", "Chart + Table Evidence", density_score)
-    return _analytical_decision("Analytical / Claim + Proof", "Claim + Proof Split", density_score)
+        decision = _utility_decision("Structured Evidence / Table", "Evidence Table", density_score)
+    elif visual_type == "timeline_or_process" and not _contains_expressive_intent(text):
+        decision = _utility_decision("Utility / Process", "Multi-track Process", density_score)
+    elif visual_type == "matrix":
+        decision = _utility_decision("Structured Evidence / Matrix", "Process Matrix", density_score)
+    elif _contains_expressive_intent(text):
+        decision = _expressive_decision(text, density_score)
+    elif visual_type == "data_cards":
+        decision = _analytical_decision("Analytical / Data Storytelling", "Chart + Table Evidence", density_score)
+    else:
+        decision = _analytical_decision("Analytical / Claim + Proof", "Claim + Proof Split", density_score)
+    decision["information_density"].update({"evidence_load": evidence_load, "rationale": density_rationale})
+    return decision
 
 
-def _density_score(point_count: int, char_count: int, has_data: bool) -> int:
-    if char_count >= 1200 or point_count >= 7:
-        return 5
-    if char_count >= 800 or point_count >= 5:
-        return 4
-    if char_count >= 450 or has_data:
-        return 3
-    if char_count >= 180 or point_count >= 3:
-        return 2
-    return 1
+def _density_score(
+    segment: dict[str, Any],
+    point_count: int,
+    char_count: int,
+    has_data: bool,
+    context: dict[str, float] | None,
+) -> tuple[int, float, str]:
+    evidence_load = float(
+        segment.get("evidence_load")
+        or (len(segment.get("source_block_ids", [])) * 0.6 + point_count * 0.8 + len(segment.get("data_points", [])) + char_count / 500)
+    )
+    median = float((context or {}).get("median", evidence_load or 1))
+    minimum = float((context or {}).get("min", evidence_load))
+    maximum = float((context or {}).get("max", evidence_load))
+    if maximum - minimum < 0.5:
+        score = 3
+    else:
+        position = (evidence_load - minimum) / (maximum - minimum)
+        score = max(1, min(5, 1 + round(position * 4)))
+    rationale = (
+        f"Evidence load {evidence_load:.2f} versus deck median {median:.2f}; "
+        "this is a deck-relative pacing measure, not a character-count threshold."
+    )
+    return score, round(evidence_load, 2), rationale
 
 
 def _utility_decision(strategy: str, archetype: str, density: int) -> dict[str, Any]:
