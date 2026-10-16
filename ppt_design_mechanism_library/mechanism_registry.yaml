@@ -1,0 +1,80 @@
+version: 3.0
+match_key: page_structure × match_signature
+instructions:
+  - 先生成页面关系合同page_structure
+  - 使用组间关系、组内关系、顺序、映射、容量和证据形态执行硬门槛匹配
+  - 匹配只决定拓扑与版式机制，区域比例在设计稿实例化时自适应
+  - 候选同级时选择所需适配最少且来源证据更完整者
+  - 不按行业、品牌、来源页关键词、具体色调或表面外观匹配
+
+mechanisms:
+  - {id: R1-L01, relation: "proposition_A + proposition_B -> shared_thesis", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L01_双命题并置.md"}
+  - {id: R1-L02, relation: "base_capability -> expanded_scope_or_higher_capability", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L02_能力扩张扇面.md"}
+  - {id: R1-L03, relation: "macro_phases over shared_time_axis + discrete_milestones", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L03_阶段带与里程碑轴.md"}
+  - {id: R1-L04, relation: "ranked_claims -> shared_anchor", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L04_优先级挂载轨道.md"}
+  - {id: R1-L05, relation: "thesis = component_A operator component_B", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L05_公式化对比.md"}
+  - {id: R1-L06, relation: "one_physical_or_system_asset -> multiple_capabilities", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L06_中央基础设施Hero.md"}
+  - {id: R1-L07, relation: "broad_geographic_coverage -> focused_region -> local_node_evidence", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L07_空间放大镜.md"}
+  - {id: R1-L08, relation: "promises_or_inputs <-> delivered_outcomes via explicit_mapping", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L08_等价桥.md"}
+  - {id: R1-L09, relation: "recurring_management_cycle + separate_linear_execution_stages", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L09_循环管理与线性执行.md"}
+  - {id: R1-L10, relation: "enabling_technology_or_platform -> capabilities -> validated_outcomes", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L10_技术Hero与成果证明栏.md"}
+  - {id: R1-L11, relation: "one_recurring_mechanism -> multiple_operating_domains", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L11_运营循环与落地点.md"}
+  - {id: R1-L12, relation: "actors_and_flows_across_ordered_stages", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L12_价值链泳道.md"}
+  - {id: R1-L13, relation: "multiple_objects × comparable_capabilities -> encoded_coverage", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L13_能力点阵矩阵.md"}
+  - {id: R1-L14, relation: "multiple_reasons -> shared_claim, each_reason -> compact_evidence", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L14_因素栈与迷你证据.md"}
+  - {id: R1-L15, relation: "multiple_segments × shared_metrics -> comparable_profiles", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L15_多赛道同构比较.md"}
+  - {id: R1-L16, relation: "hierarchical_market_tiers -> value_or_price_gaps -> player_positions", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L16_定位金字塔与价值差.md"}
+  - {id: R1-L17, relation: "set_A ∩ set_B ∩ set_C -> unique_overlap, enabled_by_conditions", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L17_三集合交集与成功条件.md"}
+  - {id: R1-L18, relation: "long_time_series -> structural_change -> concise_interpretation", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L18_长序列主图与结论框.md"}
+  - {id: R1-L19, relation: "value_for_side_A <-> central_entity <-> value_for_side_B", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L19_双边价值主张.md"}
+  - {id: R1-L20, relation: "dependent_capability_layers -> operating_system -> delivered_value", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L20_能力操作系统.md"}
+  - {id: R1-L21, relation: "multiple_equal_items -> shared_claim", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L21_等权证据图廊.md"}
+  - {id: R1-L22, relation: "operating_network -> measurable_outcomes", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L22_商业模式网络与结果链.md"}
+  - {id: R1-L23, relation: "core_platform -> modules_and_roles -> solutions_and_outcomes", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L23_核心系统与解决方案卫星.md"}
+  - {id: R1-L24, relation: "ordered_argument_sequence_without_time", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L24_交错论点链.md"}
+  - {id: R1-L25, relation: "observed_change -> causal_drivers", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L25_图表与驱动因素分解.md"}
+  - {id: R1-L26, relation: "mutually_reinforcing_growth_levers -> central_growth_outcome", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L26_增长拐点轮.md"}
+  - {id: R1-L27, relation: "funding_or_resource_uses × strategic_objectives -> explicit_mapping", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L27_用途与战略目标矩阵.md"}
+  - {id: R1-L28, relation: "geographic_expansion_route + time_investment_milestones", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L28_地图路线与里程碑条.md"}
+  - {id: R1-L29, relation: "inputs_and_costs -> formula_dependencies -> profit_or_value", file: "../ppt_design_reverse_engineering_rank1/01_mechanism_cards/R1_L29_商业公式层.md"}
+  - {id: R2-L01, relation: "mindset_or_condition -> behavior_change -> measurable_outcomes", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L01_心态行为结果链.md"}
+  - {id: R2-L02, relation: "categories_ordered_along_one_monotonic_variable", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L02_连续尺度分类.md"}
+  - {id: R2-L03, relation: "pain_points -> requirement_dimensions -> solution_responses", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L03_痛点需求方案闭环.md"}
+  - {id: R2-L04, relation: "macro_evolution_stages -> changed_actor_path", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L04_阶段演进与行为路径.md"}
+  - {id: R2-L05, relation: "three_distinct_capabilities -> one_shared_entity_or_outcome", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L05_能力三角系统.md"}
+  - {id: R2-L06, relation: "channel_A <-> shared_customer_or_fulfillment_network <-> channel_B", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L06_双边渠道网络.md"}
+  - {id: R2-L07, relation: "one_supported_object <- multiple_independent_support_capabilities", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L07_支持能力轮.md"}
+  - {id: R2-L08, relation: "geographic_footprint + time_based_quantity_growth -> scale_claim", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L08_地理覆盖与增长速度.md"}
+  - {id: R2-L09, relation: "geographic_nodes + material_or_information_flows -> fulfillment_capability", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L09_空间供应链网络.md"}
+  - {id: R2-L10, relation: "base_value + sequential_value_premiums -> higher_total_value", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L10_价值增量阶梯.md"}
+  - {id: R2-L11, relation: "target_date <- backward_planned_milestones", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L11_倒排时间阶梯.md"}
+  - {id: R2-L12, relation: "teams_or_workstreams × time -> tasks_dependencies_milestones", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L12_多泳道Gantt.md"}
+  - {id: R2-L13, relation: "layered_external_or_internal_factors -> cumulative_risk_mitigation", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L13_因素层与缓释塔.md"}
+  - {id: R2-L14, relation: "long_time_series + dated_event_windows -> comparative_response", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L14_危机窗口叠加.md"}
+  - {id: R2-L15, relation: "process_stages × participants -> responsibilities_or_actions", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L15_阶段与角色矩阵.md"}
+  - {id: R2-L16, relation: "two_distinct_rounds × locations_or_audiences -> schedules", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L16_双轮活动矩阵.md"}
+  - {id: R2-L17, relation: "increasing_information_over_stages -> narrowing_uncertainty_range", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L17_动态范围收敛漏斗.md"}
+  - {id: R2-L18, relation: "stakeholder_A_preference <-> negotiable_range <-> stakeholder_B_preference", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L18_双端张力与协商区间.md"}
+  - {id: R2-L19, relation: "cumulative_demand_or_contribution -> participant_tiers", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L19_需求塔与对象分级.md"}
+  - {id: R2-L20, relation: "old_process -> rule_or_system_change -> new_process", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L20_前后双流程.md"}
+  - {id: R2-L21, relation: "participant_definitions + execution_flow + weekly_or_periodic_schedule", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L21_角色定义与周期矩阵.md"}
+  - {id: R2-L22, relation: "actor_relationships_and_flows + precise_countdown_actions", file: "../ppt_design_reverse_engineering_rank2/01_mechanism_cards/R2_L22_关系图与倒排表.md"}
+  - {id: R3-L01, relation: "one_anchor -> multiple_groups -> concrete_items -> optional_downstream_outcomes", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L01_中心锚点多层辐射图谱.md"}
+  - {id: R3-L02, relation: "abstract_principles_or_capabilities -> concrete_evidence", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L02_抽象原则模型到实例证据墙.md"}
+  - {id: R3-L03, relation: "distinct_system_A + distinct_system_B -> one_shared_outcome", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L03_双系统协同汇聚图.md"}
+  - {id: R3-L04, relation: "multiple_stages_or_modules + one_shared_foundation_enabling_many_stages", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L04_横向主链与跨环节能力底座.md"}
+  - {id: R3-L05, relation: "capability_stages -> ascending_progress_toward_goal", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L05_地形式成长路径.md"}
+  - {id: R3-L06, relation: "ordered_stages + category_coverage_across_stages", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L06_阶段轴与覆盖带.md"}
+  - {id: R3-L07, relation: "dependent_capability_layers -> layer_specific_proof", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L07_分层能力与对应证据.md"}
+  - {id: R3-L08, relation: "channel_A + channel_B -> shared_coverage_or_sales_outcome", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L08_双渠道经营对照.md"}
+  - {id: R3-L09, relation: "recurring_feedback_loop -> external_relationship_or_brand_outcomes", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L09_反馈循环与外部结果.md"}
+  - {id: R3-L10, relation: "target_geographies + entry_actions + optional_partner_filters", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L10_区域聚焦与进入举措.md"}
+  - {id: R3-L11, relation: "path_A + path_B -> shared_growth_or_transformation_goal", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L11_双路径战略.md"}
+  - {id: R3-L12, relation: "foundation_layer + operating_layer -> integrated_system_or_proposition", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L12_共同体系房屋.md"}
+  - {id: R3-L13, relation: "market_or_category_scale_and_growth -> competitive_position_and_drivers", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L13_规模主图与竞争地位栏.md"}
+  - {id: R3-L14, relation: "product_or_solution_families -> distinct_underlying_mechanisms -> outcomes", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L14_产品族与机制链.md"}
+  - {id: R3-L15, relation: "domestic_or_core_channel_flow + growth_evidence + geographic_coverage -> commercialization_capability", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L15_渠道流向与全球覆盖.md"}
+  - {id: R3-L16, relation: "multiple_core_domains + resource_inputs + pipeline_or_progress_evidence -> capability_claim", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L16_多域能力核心与证据阶梯.md"}
+  - {id: R3-L17, relation: "total_resource -> proportional_allocations -> strategic_uses", file: "../ppt_design_reverse_engineering_rank3/01_mechanism_cards/R3_L17_比例分配路径.md"}
+  - {id: R4-L01, relation: "geographic_footprint + aggregate_metrics -> global_scale_claim", file: "../ppt_design_reverse_engineering_rank4/01_mechanism_cards/R4_L01_全球地图与规模指标横栏.md"}
+  - {id: R4-L02, relation: "challenges_or_actions -> response_benefits_or_results", file: "../ppt_design_reverse_engineering_rank4/01_mechanism_cards/R4_L02_挑战响应与结果分栏.md"}

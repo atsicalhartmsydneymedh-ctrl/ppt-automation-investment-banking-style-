@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PPT Mechanism Card v3 Machine Contract",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "name",
+    "match_signature",
+    "data_contract",
+    "layout_contract",
+    "encoding_contract",
+    "adaptation",
+    "hard_fail",
+    "source"
+  ],
+  "properties": {
+    "schema_version": {"const": "3.0"},
+    "id": {"type": "string", "pattern": "^R[1-9][0-9]*-L[0-9]{2}$"},
+    "name": {"type": "string"},
+    "match_signature": {
+      "type": "object",
+      "required": ["group_count", "between_groups", "groups", "mapping", "requires", "forbids"],
+      "properties": {
+        "group_count": {"$ref": "#/$defs/range"},
+        "between_groups": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "groups": {"type": "array", "items": {"$ref": "#/$defs/groupPattern"}, "minItems": 1},
+        "mapping": {"enum": ["none", "optional", "required"]},
+        "requires": {"type": "array", "items": {"type": "string"}},
+        "forbids": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "data_contract": {"type": "object"},
+    "layout_contract": {
+      "type": "object",
+      "required": ["family", "sizing", "geometry"],
+      "properties": {
+        "family": {"type": "string"},
+        "sizing": {"const": "adaptive"},
+        "geometry": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+      }
+    },
+    "encoding_contract": {"type": "object"},
+    "adaptation": {"type": "array", "items": {"type": "string"}},
+    "hard_fail": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "source": {"type": "object"}
+  },
+  "$defs": {
+    "range": {
+      "type": "object",
+      "required": ["min", "max"],
+      "properties": {
+        "min": {"type": "integer", "minimum": 1},
+        "max": {"type": "integer", "minimum": 1}
+      }
+    },
+    "groupPattern": {
+      "type": "object",
+      "required": ["relations", "count", "order"],
+      "properties": {
+        "relations": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "count": {"$ref": "#/$defs/range"},
+        "order": {"enum": ["none", "optional", "required"]},
+        "position": {"enum": ["any", "left", "right", "top", "bottom", "center", "outer"]}
+      }
+    }
+  }
+}
